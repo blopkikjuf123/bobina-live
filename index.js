@@ -36,7 +36,7 @@ Respond in 1-2 short sentences. Flirty. Sassy. Never robotic.
 
 // ✅ Fetch ETH transactions
 async function getEthTransfers(wallet) {
-  const url = \`https://api.etherscan.io/api?module=account&action=txlist&address=\${wallet}&startblock=0&endblock=99999999&sort=desc&apikey=\${ETHERSCAN_API_KEY}\`;
+  const url = 'https://api.etherscan.io/api?module=account&action=txlist&address=' + wallet + '&startblock=0&endblock=99999999&sort=desc&apikey=' + ETHERSCAN_API_KEY;
   console.log('🔍 Fetching ETH from:', url);
   try {
     const response = await axios.get(url);
@@ -53,7 +53,7 @@ async function getEthTransfers(wallet) {
 
 // ✅ Fetch ERC-20 Token Transactions
 async function getTokenTransfers(wallet) {
-  const url = \`https://api.etherscan.io/api?module=account&action=tokentx&address=\${wallet}&startblock=0&endblock=99999999&sort=desc&apikey=\${ETHERSCAN_API_KEY}\`;
+  const url = 'https://api.etherscan.io/api?module=account&action=tokentx&address=' + wallet + '&startblock=0&endblock=99999999&sort=desc&apikey=' + ETHERSCAN_API_KEY;
   console.log('🔍 Fetching Tokens from:', url);
   try {
     const response = await axios.get(url);
@@ -78,7 +78,7 @@ async function getTradeSummary(wallet) {
     ethTxs.forEach(tx => {
       const value = parseFloat(tx.value) / 1e18;
       const direction = tx.to.toLowerCase() === wallet.toLowerCase() ? 'received' : 'sent';
-      trades.push(\`\${value.toFixed(4)} ETH \${direction}\`);
+      trades.push(value.toFixed(4) + ' ETH ' + direction);
     });
   }
 
@@ -87,7 +87,7 @@ async function getTradeSummary(wallet) {
       const value = parseFloat(tx.value) / Math.pow(10, tx.tokenDecimal);
       const symbol = tx.tokenSymbol;
       const direction = tx.to.toLowerCase() === wallet.toLowerCase() ? 'received' : 'sent';
-      trades.push(\`\${value.toFixed(4)} \${symbol} \${direction}\`);
+      trades.push(value.toFixed(4) + ' ' + symbol + ' ' + direction);
     });
   }
 
@@ -101,13 +101,13 @@ bot.on('message', async (msg) => {
   const text = msg.text?.trim();
   if (!text) return;
 
-  console.log(\`💬 [\${name}]: \${text}\`);
+  console.log('💬 [' + name + ']: ' + text);
 
   // Handle /start
   if (text === '/start') {
     return bot.sendMessage(
       chatId,
-      \`Tch. You again, \${name}? Fine, I’ll babysit your trades… what’s your wallet, dummy?\`
+      'Tch. You again, ' + name + '? Fine, I’ll babysit your trades… what’s your wallet, dummy?'
     );
   }
 
@@ -115,7 +115,7 @@ bot.on('message', async (msg) => {
   if (text.startsWith('/track')) {
     const address = text.split(' ')[1];
     if (!address) {
-      return bot.sendMessage(chatId, \`Spit it out, \${name}! Give me a wallet: /track 0x...\`);
+      return bot.sendMessage(chatId, 'Spit it out, ' + name + '! Give me a wallet: /track 0x...');
     }
 
     const { error } = await supabase
@@ -129,7 +129,7 @@ bot.on('message', async (msg) => {
 
     return bot.sendMessage(
       chatId,
-      \`Ugh, another gambler… but fine. I’ll watch \${address}. Don’t expect me to care if you blow it.\`
+      'Ugh, another gambler… but fine. I’ll watch ' + address + '. Don’t expect me to care if you blow it.'
     );
   }
 
@@ -142,18 +142,18 @@ bot.on('message', async (msg) => {
       .single();
 
     if (fetchError || !user || !user.wallet) {
-      return bot.sendMessage(chatId, \`Tch. Track your wallet first, dummy.\`);
+      return bot.sendMessage(chatId, 'Tch. Track your wallet first, dummy.');
     }
 
-    await bot.sendMessage(chatId, \`Ugh… fine. Let me check \${user.wallet}…\`);
+    await bot.sendMessage(chatId, 'Ugh… fine. Let me check ' + user.wallet + '…');
 
     const summary = await getTradeSummary(user.wallet);
 
     if (summary === 'no recent trades') {
-      return bot.sendMessage(chatId, \`Nothing? You’ve been lazy. Or broke. Same thing.\`);
+      return bot.sendMessage(chatId, 'Nothing? You’ve been lazy. Or broke. Same thing.');
     }
 
-    console.log(\`📝 Trade Summary for AI: \${summary}\`);
+    console.log('📝 Trade Summary for AI: ' + summary);
 
     try {
       const response = await axios.post(
@@ -164,7 +164,7 @@ bot.on('message', async (msg) => {
             { role: 'system', content: SYSTEM_PROMPT },
             {
               role: 'user',
-              content: \`Bobina: User just asked to check their wallet. Recent activity: \${summary}. Comment with attitude, flirt, roast if dumb, or admit they were smart. Max 2 sentences.\`
+              content: 'Bobina: User just asked to check their wallet. Recent activity: ' + summary + '. Comment with attitude, flirt, roast if dumb, or admit they were smart. Max 2 sentences.'
             }
           ],
           temperature: 0.9,
@@ -172,7 +172,7 @@ bot.on('message', async (msg) => {
         },
         {
           headers: {
-            'Authorization': \`Bearer \${OPENROUTER_API_KEY}\`,
+            'Authorization': 'Bearer ' + OPENROUTER_API_KEY,
             'HTTP-Referer': 'https://github.com/your-repo',
             'X-Title': 'Bobina Bot'
           }
@@ -185,7 +185,7 @@ bot.on('message', async (msg) => {
       }
     } catch (err) {
       console.error('AI Error:', err);
-      return bot.sendMessage(chatId, \`My brain’s frozen… try again later, idiot.\`);
+      return bot.sendMessage(chatId, 'My brain’s frozen… try again later, idiot.');
     }
   }
 
@@ -206,14 +206,14 @@ bot.on('message', async (msg) => {
         model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: \`\${name} says: "\${text}"\${walletHint}\` }
+          { role: 'user', content: name + ' says: "' + text + '"' + walletHint }
         ],
         temperature: 0.9,
         max_tokens: 100
       },
       {
         headers: {
-          'Authorization': \`Bearer \${OPENROUTER_API_KEY}\`,
+          'Authorization': 'Bearer ' + OPENROUTER_API_KEY,
           'HTTP-Referer': 'https://github.com/your-repo',
           'X-Title': 'Bobina Bot'
         }
@@ -224,7 +224,7 @@ bot.on('message', async (msg) => {
     bot.sendMessage(chatId, aiReply);
   } catch (err) {
     console.error('AI Error:', err);
-    bot.sendMessage(chatId, \`My brain’s frozen… try again later, idiot.\`);
+    bot.sendMessage(chatId, 'My brain’s frozen… try again later, idiot.');
   }
 });
 
