@@ -1,5 +1,5 @@
-cat > package.json << 'EOL'
 {
+
   "name": "bobina-live",
   "version": "1.0.0",
   "main": "index.js",
@@ -7,7 +7,9 @@ cat > package.json << 'EOL'
     "dev": "node index.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "0.61.0"
+    "node-telegram-bot-api": "0.61.0",
+    "axios": "^1.6.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "@vercel/node": "^3.0.0"
   }
 }
-EOL
