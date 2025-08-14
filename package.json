@@ -1,0 +1,13 @@
+cat > package.json << 'EOL'
+{
+  "name": "bobina-live",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "0.61.0"
+  }
+}
+EOL
