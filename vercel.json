@@ -3,7 +3,17 @@
   "builds": [
     {
       "src": "api/*.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["api/*.js"],
+        "env": {
+          "TELEGRAM_TOKEN": "$TELEGRAM_TOKEN",
+          "OPENROUTER_API_KEY": "$OPENROUTER_API_KEY",
+          "SUPABASE_URL": "$SUPABASE_URL",
+          "SUPABASE_ANON_KEY": "$SUPABASE_ANON_KEY",
+          "ETHERSCAN_API_KEY": "$ETHERSCAN_API_KEY"
+        }
+      }
     }
   ],
   "routes": [
